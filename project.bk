@@ -1,0 +1,107 @@
+	require 'httparty'
+
+class EventsController < ApplicationController
+	before_action :authenticate_user!
+  ITERABLE_API_KEY = 'YOUR_ITERABLE_API_KEY'
+
+  def index
+    # Implement if needed
+  end
+
+  def create_event_a
+    begin
+      response = HTTParty.post(
+        body: { user_id: current_user.id },
+        headers: { 'Api-Key' => ITERABLE_API_KEY }
+      )
+
+      render plain: response.body
+    rescue HTTParty::Error, StandardError => e
+      render plain: "Error creating Event A: #{e.message}", status: :unprocessable_entity
+    end
+  end
+
+  def create_event_b
+    begin
+      # Send a request to create Event B
+      response_event_b = HTTParty.post(
+        body: { user_id: current_user.id },
+        headers: { 'Api-Key' => ITERABLE_API_KEY }
+      )
+
+      # Assuming the iterable.com API response contains information about the email notification
+      send_email_notification(response_event_b)
+
+      render plain: response_event_b.body
+    rescue HTTParty::Error, StandardError => e
+      render plain: "Error creating Event B: #{e.message}", status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def send_email_notification(response)
+    begin
+      # Send a request to send email notification
+      response_notification = HTTParty.post(
+        body: { email: current_user.email, message: 'Event B notification' },
+        headers: { 'Api-Key' => ITERABLE_API_KEY }
+      )
+
+      # Log or handle the response_notification as needed
+    rescue HTTParty::Error, StandardError => e
+      Rails.logger.error("Error sending email notification: #{e.message}")
+    end
+  end
+end
+
+
+
+
+
+
+
+require 'rails_helper'
+require 'webmock/rspec'
+
+
+RSpec.describe EventsController, type: :controller do
+  let(:user) { create(:user) }
+
+  before do
+    # Mocking the HTTP request using WebMock
+    stub_request(:post, 'https://api.iterable.com/api/email/target').to_return(
+        body: { msg: 'Notification sent successfully!', code: 'Success', params: {} }.to_json, headers: {}
+      )
+  end
+
+  describe 'POST create_event_b' do
+    it 'creates Event B in iterable.com and sends email notification' do
+      sign_in user # Assuming you are using Devise or a similar authentication system
+
+      expect(HTTParty).to receive(:post).with(
+        body: { user_id: user.id },
+        headers: { 'Api-Key' => ITERABLE_API_KEY }
+      ).and_call_original
+
+      expect(controller).to receive(:send_email_notification).once
+
+      post :create_event_b
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to eq('{"status": "success", "message": "Event B created"}')
+    end
+
+    it 'handles errors gracefully' do
+      sign_in user # Assuming you are using Devise or a similar authentication system
+
+      # Mocking an error response
+      allow(HTTParty).to receive(:post).and_raise(HTTParty::Error, 'Some error')
+
+      post :create_event_b
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to eq('Error creating Event B: Some error')
+    end
+  end
+end
