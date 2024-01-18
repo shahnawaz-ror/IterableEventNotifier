@@ -46,10 +46,10 @@ Click "Create Event A" to generate an instance of Event A.
 Click "Create Event B" to generate an instance of Event B and trigger an email notification.
 
 ## Testing
-RSpec
-RSpec is used for testing. Run the test suite with:
+### RSpec
+.Spec is used for testing. Run the test suite with
 `rspec`
-RuboCop is configured to maintain code quality. Run RuboCop with:
+. RuboCop is configured to maintain code quality. Run RuboCop with
 `rubocop -A`
 
 ## Conclusion
