@@ -11,13 +11,18 @@ Follow the steps below to clone the repository and set up the application on you
 - Git installed
 
 ### Installation
-
+Run on terminal
+#### Clone the Git Repository:
 'git clone https://github.com/shahnawaz-ror/IterableEventNotifier.git`
+#### Change Directory to IterableEventNotifier:
 `cd IterableEventNotifier`
-
+#### Install Dependencies with Bundler:
 `bundle install`
+#### Create the Database:
 `rails db:create`
+#### Run Migrations:
 `rails db:migrate`
+#### Start the Rails Server:
 `rails server`
 
 ## Web-Based Event Trigger and Email Notification System
