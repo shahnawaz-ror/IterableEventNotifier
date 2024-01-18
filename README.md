@@ -47,8 +47,9 @@ Click "Create Event B" to generate an instance of Event B and trigger an email n
 
 ## Testing
 ### RSpec
-##### Spec is used for testing. Run the test suite with
+###### Spec is used for testing. Run the test suite with:
 `rspec`
+### Rubocop
 ##### RuboCop is configured to maintain code quality. Run RuboCop with
 `rubocop -A`
 
